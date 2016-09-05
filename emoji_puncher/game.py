@@ -80,10 +80,8 @@ class EnemySpawner(object):
             self.spawn()
 
     def spawn(self):
-        enemy = Enemy(game=self.game, spawner=self)
-
+        enemy = Enemy.spawn(game=self.game, spawner=self)
         self.enemies.append(enemy)
-        self.game.entities.append(enemy)
 
         self.last_spawn = pygame.time.get_ticks()
 

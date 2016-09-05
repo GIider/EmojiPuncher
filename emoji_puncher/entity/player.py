@@ -19,7 +19,7 @@ class Player(Entity):
 
     def punch(self, direction):
         if self._punch is None or not self._punch.alive:
-            punch = Punch.spawn(player=self, direction=direction)
+            punch = Punch.spawn(game=self.game, player=self, direction=direction)
         else:
             punch = self._punch
 

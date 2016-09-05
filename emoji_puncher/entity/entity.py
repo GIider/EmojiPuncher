@@ -30,14 +30,12 @@ class Entity(object):
     def rect(self):
         return pygame.Rect(self.x, self.y, self.width, self.height)
 
-    """
     @classmethod
-    def spawn(cls, entity):
-        sprite = cls(game=entity.game)
+    def spawn(cls, game, **kwargs):
+        sprite = cls(game=game, **kwargs)
         sprite.game.entities.append(sprite)
 
         return sprite
-    """
 
     def load_sprite(self, path):
         if path is not None:

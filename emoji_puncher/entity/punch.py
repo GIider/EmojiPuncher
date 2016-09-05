@@ -25,13 +25,6 @@ class Punch(TimedEntity):
         self.load_sprite(path=self.punch_images[direction])
         self.load_position()
 
-    @classmethod
-    def spawn(cls, player, direction):
-        sprite = cls(game=player.game, player=player, direction=direction)
-        sprite.game.entities.append(sprite)
-
-        return sprite
-
     def load_position(self):
         if self.direction == Direction.RIGHT:
             self.x = self.player.x + self.width
@@ -51,4 +44,4 @@ class Punch(TimedEntity):
         enemy.hurt()
         self.hit_enemies.append(enemy)
 
-        Blam.spawn(enemy)
+        Blam.spawn(game=self.game, enemy=enemy)

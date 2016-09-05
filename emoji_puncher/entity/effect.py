@@ -20,13 +20,6 @@ class Blam(TimedEntity):
         self.enemy = enemy
         self.load_position()
 
-    @classmethod
-    def spawn(cls, enemy):
-        sprite = cls(game=enemy.game, enemy=enemy)
-        sprite.game.entities.append(sprite)
-
-        return sprite
-
     def load_position(self):
         self.x = self.enemy.x
         self.y = self.enemy.y
