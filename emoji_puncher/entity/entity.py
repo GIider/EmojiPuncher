@@ -4,6 +4,9 @@ import pygame
 
 __all__ = ['Entity', 'TimedEntity']
 
+LOADED_IMAGES = {}
+
+
 
 class Entity(object):
     width = 64
@@ -39,7 +42,11 @@ class Entity(object):
 
     def load_sprite(self, path):
         if path is not None:
-            self.sprite = pygame.image.load(path).convert_alpha()
+            try:
+                self.sprite = LOADED_IMAGES[path].copy()
+            except KeyError:
+                self.sprite = pygame.image.load(path).convert_alpha()
+                LOADED_IMAGES[path] = self.sprite
 
     def load_position(self):
         """Called before rendering to change the location of the object"""
