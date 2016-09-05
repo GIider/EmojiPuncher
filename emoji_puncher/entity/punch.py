@@ -11,6 +11,7 @@ __all__ = ['Punch']
 
 class Punch(TimedEntity):
     time_alive = 85
+    damage = 1
 
     punch_images = {Direction.LEFT: os.path.join(IMAGE_FOLDER, 'punch', '1f91b.png'),
                     Direction.RIGHT: os.path.join(IMAGE_FOLDER, 'punch', '1f91c.png')}
@@ -41,7 +42,7 @@ class Punch(TimedEntity):
                 self.punch_enemy(enemy=entity)
 
     def punch_enemy(self, enemy):
-        enemy.hurt()
+        enemy.hurt(damage=self.damage)
         self.hit_enemies.append(enemy)
 
         Blam.spawn(game=self.game, enemy=enemy)

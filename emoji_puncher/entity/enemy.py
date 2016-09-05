@@ -9,14 +9,16 @@ __all__ = ['Enemy']
 
 
 class Enemy(Entity):
-    speed = 0
-    sprite_path = os.path.join(IMAGE_FOLDER, 'enemy', '3.png')
+    GOOD_HEALTH_PATH = os.path.join(IMAGE_FOLDER, 'enemy', '3.png')
+    MEDIUM_HEALTH_PATH = os.path.join(IMAGE_FOLDER, 'enemy', '2.png')
+    LOW_HEALTH_PATH = os.path.join(IMAGE_FOLDER, 'enemy', '1.png')
 
     def __init__(self, game, spawner):
+        self.sprite_path = self.GOOD_HEALTH_PATH
         super().__init__(game)
 
         self.spawner = spawner
-        self.hp = 3
+        self.hp = 10
         self.speed = random.uniform(0, 0.25)
 
         self.x = random.choice([0, game.WIDTH])
@@ -27,13 +29,19 @@ class Enemy(Entity):
         else:
             self.x_velocity -= self.speed
 
-    def hurt(self):
-        self.hp -= 1
+    def hurt(self, damage):
+        self.hp -= damage
 
-        if self.hp == 0:
+        if self.hp <= 0:
             return self.destroy()
 
-        new_sprite_path = os.path.join(IMAGE_FOLDER, 'enemy', '%d.png' % self.hp)
+        if self.hp >= 7:
+            new_sprite_path = self.GOOD_HEALTH_PATH
+        elif self.hp >= 4:
+            new_sprite_path = self.MEDIUM_HEALTH_PATH
+        else:
+            new_sprite_path = self.LOW_HEALTH_PATH
+
         self.load_sprite(path=new_sprite_path)
 
     def update(self, time_passed):

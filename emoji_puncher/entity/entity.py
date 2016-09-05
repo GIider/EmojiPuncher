@@ -1,11 +1,13 @@
 # coding=utf-8
+import os
 
 import pygame
+
+from ..constant import IMAGE_FOLDER
 
 __all__ = ['Entity', 'TimedEntity']
 
 LOADED_IMAGES = {}
-
 
 
 class Entity(object):
@@ -20,7 +22,7 @@ class Entity(object):
 
     speed = 0
 
-    sprite_path = None
+    sprite_path = os.path.join(IMAGE_FOLDER, 'placeholder.png')
 
     def __init__(self, game):
         self.sprite = None
@@ -41,12 +43,11 @@ class Entity(object):
         return sprite
 
     def load_sprite(self, path):
-        if path is not None:
-            try:
-                self.sprite = LOADED_IMAGES[path].copy()
-            except KeyError:
-                self.sprite = pygame.image.load(path).convert_alpha()
-                LOADED_IMAGES[path] = self.sprite
+        try:
+            self.sprite = LOADED_IMAGES[path].copy()
+        except KeyError:
+            self.sprite = pygame.image.load(path).convert_alpha()
+            LOADED_IMAGES[path] = self.sprite
 
     def load_position(self):
         """Called before rendering to change the location of the object"""
