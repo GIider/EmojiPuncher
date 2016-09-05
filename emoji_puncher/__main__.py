@@ -4,7 +4,7 @@ import sys
 import pygame
 
 from .player import Player
-from .constant import Direction, DIRECTION_KEYS
+from .constant import Direction, DIRECTION_KEYS, PUNCHING_KEYS
 
 
 class Game(object):
@@ -23,8 +23,8 @@ class Game(object):
             self.quit()
         elif key in DIRECTION_KEYS:
             self.player.move(direction=Direction.from_key(key=key))
-        elif key == pygame.K_SPACE:
-            self.player.punch()
+        elif key in PUNCHING_KEYS:
+            self.player.punch(direction=Direction.from_key(key=key))
 
     def handle_keyup(self, key):
         if key in DIRECTION_KEYS:

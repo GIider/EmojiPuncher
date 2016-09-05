@@ -37,22 +37,30 @@ class Entity(object):
 
 
 class Punch(Entity):
-    sprite_path = os.path.join(IMAGE_FOLDER, 'punch', '1f91c.png')
+
 
     time_spawned = 0
     time_alive = 0.3
 
-    def __init__(self, game, player):
+    def __init__(self, game, player, direction):
+        if direction == Direction.LEFT:
+            self.sprite_path = os.path.join(IMAGE_FOLDER, 'punch', '1f91b.png')
+        elif direction == Direction.RIGHT:
+            self.sprite_path = os.path.join(IMAGE_FOLDER, 'punch', '1f91c.png')
+        else:
+            raise ValueError(direction)
+
         super().__init__(game)
 
         self.time_spawned = time.time()
         self.player = player
+        self.direction = direction
 
         self.update()
 
     @classmethod
-    def spawn(cls, player):
-        sprite = cls(game=player.game, player=player)
+    def spawn(cls, player, direction):
+        sprite = cls(game=player.game, player=player, direction=direction)
         sprite.game.entities.append(sprite)
 
         return sprite
@@ -65,7 +73,11 @@ class Punch(Entity):
         if not self.alive:
             return
 
-        self.x = self.player.x + self.width
+        if self.direction == Direction.RIGHT:
+            self.x = self.player.x + self.width
+        elif self.direction == Direction.LEFT:
+            self.x = self.player.x - self.width
+
         self.y = self.player.y
 
         now = time.time()
@@ -84,7 +96,7 @@ class Player(Entity):
 
     def punch(self, direction):
         if self._punch is None or not self._punch.alive:
-            punch = Punch.spawn(player=self)
+            punch = Punch.spawn(player=self, direction=direction)
         else:
             punch = self._punch
 

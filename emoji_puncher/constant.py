@@ -27,4 +27,4 @@ ASSIGNED_KEY = {pygame.K_LEFT: Direction.LEFT,
                 pygame.K_UP: Direction.UP,
 
                 pygame.K_a: Direction.LEFT,
-                pygame.K_b: Direction.RIGHT}
+                pygame.K_d: Direction.RIGHT}
