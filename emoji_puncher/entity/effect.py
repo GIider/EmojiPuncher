@@ -34,9 +34,6 @@ class Blam(TimedEntity):
     def update(self, time_passed):
         super(Blam, self).update(time_passed)
 
-        if not self.alive:
-            return
-
         self.sprite = pygame.transform.rotate(self.sprite, 90 * time_passed)
 
 
@@ -53,9 +50,3 @@ class LevelUp(TimedEntity):
     def load_position(self):
         self.x = self.player.x
         self.y = self.player.y + self.height
-
-    def update(self, time_passed):
-        super(LevelUp, self).update(time_passed)
-
-        if not self.alive:
-            return

@@ -57,7 +57,8 @@ class Game(object):
 
             self.spawner.update()
             for entity in self.entities:
-                entity.update(time_passed=time_passed)
+                if entity.alive:
+                    entity.update(time_passed=time_passed)
 
 
 class EnemySpawner(object):

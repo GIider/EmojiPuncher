@@ -43,9 +43,6 @@ class Punch(TimedEntity):
     def update(self, time_passed):
         super(Punch, self).update(time_passed)
 
-        if not self.alive:
-            return
-
         for entity in self.game.entities:
             if isinstance(entity, Enemy) and self.colliding(entity) and entity not in self.hit_enemies:
                 self.punch_enemy(enemy=entity)

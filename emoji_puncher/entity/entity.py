@@ -78,9 +78,6 @@ class TimedEntity(Entity):
         return self.time_spawned + self.time_alive
 
     def update(self, time_passed):
-        if not self.alive:
-            return
-
         now = pygame.time.get_ticks()
         if now >= self.expiry_time:
             self.destroy()
