@@ -4,6 +4,7 @@ import os
 
 import pygame
 
+ENEMY_SPAWN_COOLDOWN = 500
 MAX_ENEMIES = 25
 
 

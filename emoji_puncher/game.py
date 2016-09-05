@@ -1,10 +1,9 @@
 # coding=utf-8
-import random
 import sys
 
 import pygame
 
-from .constant import Direction, DIRECTION_KEYS, PUNCHING_KEYS, MAX_ENEMIES
+from .constant import Direction, DIRECTION_KEYS, PUNCHING_KEYS, MAX_ENEMIES, ENEMY_SPAWN_COOLDOWN
 from .entity import Player, Enemy
 
 
@@ -67,9 +66,17 @@ class EnemySpawner(object):
         self.enemies = []
 
         self.game = game
+        self.last_spawn = pygame.time.get_ticks()
+
+    @property
+    def can_spawn(self):
+        now = pygame.time.get_ticks()
+
+        return now >= (self.last_spawn + ENEMY_SPAWN_COOLDOWN) and \
+               len(self.enemies) <= MAX_ENEMIES
 
     def update(self):
-        if len(self.enemies) <= MAX_ENEMIES and random.randint(0, 100) <= 10:
+        if self.can_spawn:
             self.spawn()
 
     def spawn(self):
@@ -77,6 +84,8 @@ class EnemySpawner(object):
 
         self.enemies.append(enemy)
         self.game.entities.append(enemy)
+
+        self.last_spawn = pygame.time.get_ticks()
 
     def killed(self, enemy):
         self.enemies.remove(enemy)
