@@ -54,7 +54,7 @@ class Entity(object):
 
 class Punch(Entity):
     time_spawned = 0
-    time_alive = 0.3
+    time_alive = 0.125
 
     punch_images = {Direction.LEFT: os.path.join(IMAGE_FOLDER, 'punch', '1f91b.png'),
                     Direction.RIGHT: os.path.join(IMAGE_FOLDER, 'punch', '1f91c.png')}
@@ -65,6 +65,7 @@ class Punch(Entity):
         self.time_spawned = time.time()
         self.player = player
         self.direction = direction
+        self.hit_enemies = []
 
         self.load_sprite(path=self.punch_images[direction])
         self.update()
@@ -92,8 +93,9 @@ class Punch(Entity):
         self.y = self.player.y
 
         for entity in self.game.entities:
-            if isinstance(entity, Enemy) and self.colliding(entity):
-                entity.destroy()
+            if isinstance(entity, Enemy) and self.colliding(entity) and entity not in self.hit_enemies:
+                entity.hurt()
+                self.hit_enemies.append(entity)
 
         now = time.time()
         if now >= self.expiry_time:
@@ -144,12 +146,13 @@ class Player(Entity):
 
 class Enemy(Entity):
     speed = 5
-    sprite_path = os.path.join(IMAGE_FOLDER, 'enemy.png')
+    sprite_path = os.path.join(IMAGE_FOLDER, 'enemy', '3.png')
 
     def __init__(self, game, spawner):
         super().__init__(game)
 
         self.spawner = spawner
+        self.hp = 3
 
         self.x = random.choice([0, game.WIDTH])
         self.y = random.randrange(0, game.HEIGHT - self.height)
@@ -158,6 +161,15 @@ class Enemy(Entity):
             self.x_velocity = self.speed
         else:
             self.x_velocity -= self.speed
+
+    def hurt(self):
+        self.hp -= 1
+
+        if self.hp == 0:
+            return self.destroy()
+
+        new_sprite_path = os.path.join(IMAGE_FOLDER, 'enemy', '%d.png' % self.hp)
+        self.load_sprite(path=new_sprite_path)
 
     def update(self):
         super(Enemy, self).update()
