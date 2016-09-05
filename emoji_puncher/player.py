@@ -35,7 +35,7 @@ class Entity(object):
 
     def load_sprite(self, path):
         if path is not None:
-            self.sprite = pygame.image.load(path).convert()
+            self.sprite = pygame.image.load(path).convert_alpha()
 
     def render(self, screen):
         screen.blit(self.sprite, (self.x, self.y))

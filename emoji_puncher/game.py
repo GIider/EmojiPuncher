@@ -50,7 +50,7 @@ class Game(object):
                     self.quit()
 
             clock.tick(60)
-            self.screen.fill((0, 0, 0))
+            self.screen.fill((255, 255, 255))
             for entity in self.entities:
                 entity.render(screen=self.screen)
 
