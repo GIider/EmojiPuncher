@@ -3,7 +3,7 @@ import sys
 
 import pygame
 
-from .constant import Direction, DIRECTION_KEYS, PUNCHING_KEYS, MAX_ENEMIES, ENEMY_SPAWN_COOLDOWN
+from .constant import MAX_ENEMIES, ENEMY_SPAWN_COOLDOWN
 from .entity import Player, Enemy
 
 
@@ -24,14 +24,8 @@ class Game(object):
     def handle_keydown(self, key):
         if key == pygame.K_ESCAPE:
             self.quit()
-        elif key in DIRECTION_KEYS:
-            self.player.move(direction=Direction.from_key(key=key))
-        elif key in PUNCHING_KEYS:
-            self.player.punch(direction=Direction.from_key(key=key))
 
-    def handle_keyup(self, key):
-        if key in DIRECTION_KEYS:
-            self.player.stop(direction=Direction.from_key(key=key))
+        self.player.process_keydown(key)
 
     def quit(self):
         pygame.quit()
@@ -42,8 +36,6 @@ class Game(object):
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     self.handle_keydown(key=event.key)
-                elif event.type == pygame.KEYUP:
-                    self.handle_keyup(key=event.key)
                 elif event.type == pygame.QUIT:
                     self.quit()
 

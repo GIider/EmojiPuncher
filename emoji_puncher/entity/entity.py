@@ -14,13 +14,17 @@ class Entity(object):
     width = 64
     height = 64
 
-    x = 0
-    y = 0
-
     x_velocity = 0
     y_velocity = 0
 
+    maximum_x_velocity = 2.5
+    maximum_y_velocity = 2.5
+
+    minimum_x_velocity = -1 * maximum_x_velocity
+    minimum_y_velocity = -1 * maximum_y_velocity
+
     speed = 0
+    friction = 0.08
 
     sprite_path = os.path.join(IMAGE_FOLDER, 'placeholder.png')
 
@@ -28,6 +32,9 @@ class Entity(object):
         self.sprite = None
         self.game = game
         self.alive = True
+
+        self.x = 0
+        self.y = 0
 
         self.load_sprite(path=self.sprite_path)
 
