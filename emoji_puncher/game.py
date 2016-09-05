@@ -18,6 +18,7 @@ class Game(object):
         self.player = Player(game=self)
         self.spawner = EnemySpawner(game=self)
         self.clock = pygame.time.Clock()
+        self.pause = False
 
         self.entities = [self.player]
 
@@ -25,7 +26,11 @@ class Game(object):
         if key == pygame.K_ESCAPE:
             self.quit()
 
-        self.player.process_keydown(key)
+        elif key == pygame.K_p:
+            self.pause = not self.pause
+
+        if not self.pause:
+            self.player.process_keydown(key)
 
     def quit(self):
         pygame.quit()
@@ -46,11 +51,13 @@ class Game(object):
 
             pygame.display.flip()
 
-            self.spawner.update()
+            if not self.pause:
+                self.spawner.update()
+
             for entity in self.entities[:]:
-                if entity.alive:
+                if entity.alive and not self.pause:
                     entity.update(time_passed=time_passed)
-                else:
+                elif not entity.alive:
                     self.entities.remove(entity)
 
 
