@@ -56,9 +56,6 @@ class Entity(object):
         screen.blit(self.sprite, (self.x, self.y))
 
     def destroy(self):
-        if self in self.game.entities:
-            self.game.entities.remove(self)
-
         self.alive = False
 
     def update(self, time_passed):

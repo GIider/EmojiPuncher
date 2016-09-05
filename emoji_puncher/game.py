@@ -55,9 +55,11 @@ class Game(object):
             pygame.display.flip()
 
             self.spawner.update()
-            for entity in self.entities:
+            for entity in self.entities[:]:
                 if entity.alive:
                     entity.update(time_passed=time_passed)
+                else:
+                    self.entities.remove(entity)
 
 
 class EnemySpawner(object):
