@@ -1,4 +1,5 @@
 # coding=utf-8
+import random
 import time
 import os
 
@@ -22,11 +23,19 @@ class Entity(object):
     sprite_path = None
 
     def __init__(self, game):
-        if self.sprite_path is not None:
-            self.sprite = pygame.image.load(self.sprite_path)
-
+        self.sprite = None
         self.game = game
         self.alive = True
+
+        self.load_sprite(path=self.sprite_path)
+
+    @property
+    def rect(self):
+        return pygame.Rect(self.x, self.y, self.width, self.height)
+
+    def load_sprite(self, path):
+        if path is not None:
+            self.sprite = pygame.image.load(path).convert()
 
     def render(self, screen):
         screen.blit(self.sprite, (self.x, self.y))
@@ -35,27 +44,29 @@ class Entity(object):
         self.game.entities.remove(self)
         self.alive = False
 
+    def update(self):
+        self.x += self.x_velocity
+        self.y += self.y_velocity
+
+    def colliding(self, other_entity):
+        return self.rect.colliderect(other_entity.rect)
+
 
 class Punch(Entity):
-
-
     time_spawned = 0
     time_alive = 0.3
 
-    def __init__(self, game, player, direction):
-        if direction == Direction.LEFT:
-            self.sprite_path = os.path.join(IMAGE_FOLDER, 'punch', '1f91b.png')
-        elif direction == Direction.RIGHT:
-            self.sprite_path = os.path.join(IMAGE_FOLDER, 'punch', '1f91c.png')
-        else:
-            raise ValueError(direction)
+    punch_images = {Direction.LEFT: os.path.join(IMAGE_FOLDER, 'punch', '1f91b.png'),
+                    Direction.RIGHT: os.path.join(IMAGE_FOLDER, 'punch', '1f91c.png')}
 
+    def __init__(self, game, player, direction):
         super().__init__(game)
 
         self.time_spawned = time.time()
         self.player = player
         self.direction = direction
 
+        self.load_sprite(path=self.punch_images[direction])
         self.update()
 
     @classmethod
@@ -79,6 +90,10 @@ class Punch(Entity):
             self.x = self.player.x - self.width
 
         self.y = self.player.y
+
+        for entity in self.game.entities:
+            if isinstance(entity, Enemy) and self.colliding(entity):
+                entity.destroy()
 
         now = time.time()
         if now >= self.expiry_time:
@@ -126,6 +141,31 @@ class Player(Entity):
         else:
             raise ValueError(direction)
 
+
+class Enemy(Entity):
+    speed = 5
+    sprite_path = os.path.join(IMAGE_FOLDER, 'enemy.png')
+
+    def __init__(self, game, spawner):
+        super().__init__(game)
+
+        self.spawner = spawner
+
+        self.x = random.choice([0, game.WIDTH])
+        self.y = random.randrange(0, game.HEIGHT - self.height)
+
+        if self.x == 0:
+            self.x_velocity = self.speed
+        else:
+            self.x_velocity -= self.speed
+
     def update(self):
-        self.x += self.x_velocity
-        self.y += self.y_velocity
+        super(Enemy, self).update()
+
+        if self.x >= self.game.WIDTH or self.x <= 0:
+            self.destroy()
+
+    def destroy(self):
+        super(Enemy, self).destroy()
+
+        self.spawner.killed(self)

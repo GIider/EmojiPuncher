@@ -4,6 +4,8 @@ import enum
 import pygame
 import os
 
+MAX_ENEMIES = 25
+
 
 class Direction(enum.Enum):
     LEFT = 1
