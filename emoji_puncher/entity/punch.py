@@ -23,7 +23,7 @@ class Punch(TimedEntity):
         self.direction = direction
         self.hit_enemies = []
 
-        self.load_sprite(path=self.punch_images[direction])
+        self.sprite = self.load_sprite(path=self.punch_images[direction])
         self.load_position()
 
     def load_position(self):

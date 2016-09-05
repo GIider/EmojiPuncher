@@ -29,14 +29,13 @@ class Entity(object):
     sprite_path = os.path.join(IMAGE_FOLDER, 'placeholder.png')
 
     def __init__(self, game):
-        self.sprite = None
         self.game = game
         self.alive = True
 
         self.x = 0
         self.y = 0
 
-        self.load_sprite(path=self.sprite_path)
+        self.sprite = self.load_sprite(path=self.sprite_path)
 
     @property
     def rect(self):
@@ -51,13 +50,16 @@ class Entity(object):
 
     def load_sprite(self, path):
         try:
-            self.sprite = LOADED_IMAGES[path].copy()
+            sprite = LOADED_IMAGES[path].copy()
         except KeyError:
-            self.sprite = pygame.image.load(path).convert_alpha()
-            LOADED_IMAGES[path] = self.sprite
+            sprite = pygame.image.load(path).convert_alpha()
+            LOADED_IMAGES[path] = sprite
+
+        return sprite
 
     def load_position(self):
         """Called before rendering to change the location of the object"""
+        pass
 
     def render(self, screen):
         self.load_position()

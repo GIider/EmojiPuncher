@@ -42,7 +42,7 @@ class Enemy(Entity):
         else:
             new_sprite_path = self.LOW_HEALTH_PATH
 
-        self.load_sprite(path=new_sprite_path)
+        self.sprite = self.load_sprite(path=new_sprite_path)
 
     def update(self, time_passed):
         super(Enemy, self).update(time_passed)

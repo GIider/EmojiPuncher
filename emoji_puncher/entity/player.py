@@ -13,24 +13,40 @@ __all__ = ['Player']
 class Player(Entity):
     speed = 0.55
     sprite_path = os.path.join(IMAGE_FOLDER, 'player.png')
+    angry_sprite_path = os.path.join(IMAGE_FOLDER, 'player_angry.png')
 
     def __init__(self, game):
-        super().__init__(game)
-
         self.moving = False
         self._punch = None
+
+        super().__init__(game)
 
     def process_keydown(self, key):
         if key in PUNCHING_KEYS:
             self.punch(direction=Direction.from_key(key=key))
 
+    @property
+    def is_punching(self):
+        return not (self._punch is None or not self._punch.alive)
+
     def punch(self, direction):
-        if self._punch is None or not self._punch.alive:
+        if not self.is_punching:
             punch = Punch.spawn(game=self.game, player=self, direction=direction)
         else:
             punch = self._punch
 
         self._punch = punch
+
+    @property
+    def sprite(self):
+        if self.is_punching:
+            return self.load_sprite(path=self.angry_sprite_path)
+        else:
+            return self.load_sprite(path=self.sprite_path)
+
+    @sprite.setter
+    def sprite(self, value):
+        return
 
     def update(self, time_passed):
         pressed_keys = pygame.key.get_pressed()
