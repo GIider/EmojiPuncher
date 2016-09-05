@@ -1,8 +1,8 @@
 # coding=utf-8
 import enum
+import os
 
 import pygame
-import os
 
 MAX_ENEMIES = 25
 

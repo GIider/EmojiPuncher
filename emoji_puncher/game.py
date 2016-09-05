@@ -4,8 +4,8 @@ import sys
 
 import pygame
 
-from .player import Player, Enemy
 from .constant import Direction, DIRECTION_KEYS, PUNCHING_KEYS, MAX_ENEMIES
+from .entity import Player, Enemy
 
 
 class Game(object):
