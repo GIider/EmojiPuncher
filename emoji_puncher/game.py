@@ -18,6 +18,7 @@ class Game(object):
 
         self.player = Player(game=self)
         self.spawner = EnemySpawner(game=self)
+        self.clock = pygame.time.Clock()
 
         self.entities = [self.player]
 
@@ -38,8 +39,6 @@ class Game(object):
         sys.exit()
 
     def run(self):
-        clock = pygame.time.Clock()
-
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
@@ -49,7 +48,7 @@ class Game(object):
                 elif event.type == pygame.QUIT:
                     self.quit()
 
-            clock.tick(60)
+            time_passed = self.clock.tick(60)
             self.screen.fill((255, 255, 255))
             for entity in self.entities:
                 entity.render(screen=self.screen)
@@ -58,7 +57,7 @@ class Game(object):
 
             self.spawner.update()
             for entity in self.entities:
-                entity.update()
+                entity.update(time_passed=time_passed)
 
 
 class EnemySpawner(object):

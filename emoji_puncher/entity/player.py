@@ -9,7 +9,7 @@ __all__ = ['Player']
 
 
 class Player(Entity):
-    speed = 10
+    speed = 0.45
     sprite_path = os.path.join(IMAGE_FOLDER, 'player.png')
 
     def __init__(self, game):

@@ -1,7 +1,8 @@
 # coding=utf-8
+
 import pygame
 
-__all__ = ['Entity']
+__all__ = ['Entity', 'TimedEntity']
 
 
 class Entity(object):
@@ -29,20 +30,57 @@ class Entity(object):
     def rect(self):
         return pygame.Rect(self.x, self.y, self.width, self.height)
 
+    """
+    @classmethod
+    def spawn(cls, entity):
+        sprite = cls(game=entity.game)
+        sprite.game.entities.append(sprite)
+
+        return sprite
+    """
+
     def load_sprite(self, path):
         if path is not None:
             self.sprite = pygame.image.load(path).convert_alpha()
 
+    def load_position(self):
+        """Called before rendering to change the location of the object"""
+
     def render(self, screen):
+        self.load_position()
         screen.blit(self.sprite, (self.x, self.y))
 
     def destroy(self):
-        self.game.entities.remove(self)
+        if self in self.game.entities:
+            self.game.entities.remove(self)
+
         self.alive = False
 
-    def update(self):
-        self.x += self.x_velocity
-        self.y += self.y_velocity
+    def update(self, time_passed):
+        self.x += self.x_velocity * time_passed
+        self.y += self.y_velocity * time_passed
 
     def colliding(self, other_entity):
         return self.rect.colliderect(other_entity.rect)
+
+
+class TimedEntity(Entity):
+    """Entity that dies automatically"""
+    time_alive = 0  # In milliseconds
+
+    def __init__(self, game):
+        super().__init__(game)
+
+        self.time_spawned = pygame.time.get_ticks()
+
+    @property
+    def expiry_time(self):
+        return self.time_spawned + self.time_alive
+
+    def update(self, time_passed):
+        if not self.alive:
+            return
+
+        now = pygame.time.get_ticks()
+        if now >= self.expiry_time:
+            self.destroy()
