@@ -3,28 +3,37 @@ import sys
 
 import pygame
 
-from .constant import MAX_ENEMIES, ENEMY_SPAWN_COOLDOWN
-from .entity import Player, Enemy
+from .constant import MAX_ENEMIES, ENEMY_SPAWN_COOLDOWN, HUD_HEIGHT
+from .entity import Player, Enemy, Hud
+
+
+def quit_application():
+    pygame.quit()
+    sys.exit()
 
 
 class Game(object):
-    WIDTH = 800
-    HEIGHT = 400
+    width = 800
+    height = 400
+
+    playable_width = width
+    playable_height = height - HUD_HEIGHT
 
     def __init__(self):
-        self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
+        self.screen = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption('EmojiPuncher')
 
-        self.player = Player(game=self)
+        self.entities = []
+
+        self.player = Player.spawn(game=self)
         self.spawner = EnemySpawner(game=self)
+        self.hud_controller = HudController(game=self)
         self.clock = pygame.time.Clock()
         self.pause = False
 
-        self.entities = [self.player]
-
     def handle_keydown(self, key):
         if key == pygame.K_ESCAPE:
-            self.quit()
+            quit_application()
 
         elif key == pygame.K_p:
             self.pause = not self.pause
@@ -32,17 +41,13 @@ class Game(object):
         if not self.pause:
             self.player.process_keydown(key)
 
-    def quit(self):
-        pygame.quit()
-        sys.exit()
-
     def run(self):
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     self.handle_keydown(key=event.key)
                 elif event.type == pygame.QUIT:
-                    self.quit()
+                    quit_application()
 
             time_passed = self.clock.tick(60)
             self.screen.fill((255, 255, 255))
@@ -54,6 +59,7 @@ class Game(object):
             if not self.pause:
                 self.spawner.update()
 
+            self.hud_controller.update()
             for entity in self.entities[:]:
                 if entity.alive and not self.pause:
                     entity.update(time_passed=time_passed)
@@ -88,3 +94,12 @@ class EnemySpawner(object):
 
     def killed(self, enemy):
         self.enemies.remove(enemy)
+
+
+class HudController(object):
+    def __init__(self, game):
+        self.game = game
+        self.hud = Hud.spawn(game=game)
+
+    def update(self):
+        pass

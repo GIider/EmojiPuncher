@@ -63,5 +63,5 @@ class Player(Entity):
         self.x += self.x_velocity
         self.y += self.y_velocity
 
-        self.x = min(max(self.x + self.x_velocity, 0), self.game.WIDTH - self.width)
-        self.y = min(max(self.y + self.y_velocity, 0), self.game.HEIGHT - self.height)
+        self.x = min(max(self.x + self.x_velocity, 0), self.game.playable_width - self.width)
+        self.y = min(max(self.y + self.y_velocity, 0), self.game.playable_height - self.height)

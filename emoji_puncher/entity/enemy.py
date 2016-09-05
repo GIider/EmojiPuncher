@@ -21,8 +21,8 @@ class Enemy(Entity):
         self.hp = 10
         self.speed = random.uniform(0, 0.25)
 
-        self.x = random.choice([0, game.WIDTH])
-        self.y = random.randrange(0, game.HEIGHT - self.height)
+        self.x = random.choice([0, game.playable_width])
+        self.y = random.randint(0, game.playable_height / self.height) * self.height - self.height
 
         if self.x == 0:
             self.x_velocity = self.speed
@@ -47,7 +47,7 @@ class Enemy(Entity):
     def update(self, time_passed):
         super(Enemy, self).update(time_passed)
 
-        if self.x >= self.game.WIDTH or self.x <= 0:
+        if self.x >= self.game.playable_width or self.x <= 0:
             self.destroy()
 
     def destroy(self):
