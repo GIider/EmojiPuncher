@@ -3,7 +3,7 @@ import os
 
 import pygame
 
-from ..constant import TILE_SIZE
+from ..constant import TILE_SIZE, GAME_SIZE
 from ..entity import Gate, WarpDoor
 
 __all__ = ['TestLevel']
@@ -115,11 +115,11 @@ class Camera(object):
 def complex_camera(camera, target_rect):
     l, t, _, _ = target_rect
     _, _, w, h = camera
-    l, t, _, _ = -l + 400, -t + 200, w, h  # center player
+    l, t, _, _ = -l + GAME_SIZE.width / 2, -t + GAME_SIZE.height / 2, w, h  # center player
 
     l = min(0, l)  # stop scrolling at the left edge
-    l = max(-(camera.width - 800), l)  # stop scrolling at the right edge
-    t = max(-(camera.height - 400), t)  # stop scrolling at the bottom
+    l = max(-(camera.width - GAME_SIZE.width), l)  # stop scrolling at the right edge
+    t = max(-(camera.height - GAME_SIZE.height), t)  # stop scrolling at the bottom
     t = min(0, t)  # stop scrolling at the top
 
     return pygame.rect.Rect(l, t, w, h)

@@ -57,7 +57,7 @@ class Entity(pygame.sprite.Sprite):
         """Cycle the walking frames"""
         ticks = pygame.time.get_ticks()
 
-        if self.direction == "R":
+        if self.direction == Direction.RIGHT:
             frame = (ticks // self.cycle_frame_rate) % len(self.walking_frames_r)
             self.image = self.walking_frames_r[frame]
         else:

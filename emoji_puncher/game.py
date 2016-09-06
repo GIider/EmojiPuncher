@@ -3,6 +3,7 @@ import sys
 
 import pygame
 
+from .constant import GAME_SIZE
 from .entity import Player
 from .level import TestLevel
 
@@ -13,11 +14,8 @@ def quit_application():
 
 
 class Game(object):
-    width = 800
-    height = 400
-
     def __init__(self):
-        self.screen = pygame.display.set_mode((self.width, self.height))
+        self.screen = pygame.display.set_mode(GAME_SIZE)
         pygame.display.set_caption('EmojiPuncher')
 
         self.player = Player(level=None)
