@@ -4,7 +4,7 @@ import os
 import pygame
 
 from ..constant import TILE_SIZE, GAME_SIZE
-from ..entity import Gate, WarpDoor
+from ..entity import WarpDoor, GrassyPlatformMid, GrassyPlatformRight, GrassyPlatformLeft
 
 __all__ = ['TestLevel']
 
@@ -55,13 +55,31 @@ class Level(object):
             for y in range(0, image.get_height()):
                 color = image.get_at((x, y))
 
-                # Gate
+                # Platform
                 if color == (0, 0, 0, 255):
-                    gate = Gate(level=self)
-                    gate.rect.x = x * gate.rect.width
-                    gate.rect.y = y * gate.rect.height
+                    try:
+                        platform_left = image.get_at((x + 1, y)) == (0, 0, 0, 255)
+                    except IndexError:
+                        platform_left = False
 
-                    self.entity_list.add(gate)
+                    try:
+                        platform_right = image.get_at((x - 1, y)) == (0, 0, 0, 255)
+                    except IndexError:
+                        platform_right = False
+
+                    if platform_left and platform_right:
+                        platform = GrassyPlatformMid(level=self)
+                    elif platform_left and not platform_right:
+                        platform = GrassyPlatformRight(level=self)
+                    elif not platform_left and platform_right:
+                        platform = GrassyPlatformLeft(level=self)
+                    else:
+                        platform = GrassyPlatformMid(level=self)
+
+                    platform.rect.x = x * platform.rect.width
+                    platform.rect.y = y * platform.rect.height
+
+                    self.entity_list.add(platform)
 
                 # Spawn Point
                 elif color == (255, 0, 220):
