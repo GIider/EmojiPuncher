@@ -7,12 +7,10 @@ from ..spritesheet import SpriteSheet
 
 class Entity(pygame.sprite.Sprite):
     jump_velocity = -4
-    acceleration = 0.08963  # 0.046875
-    deacceleration = 0.5
-    gravity = 0.21875 / 16
+    acceleration = 4
+    deacceleration = 3
+    gravity = 0.21875 / 32
 
-    friction = 0.08
-    maximum_run_speed = 5
     maximum_fall_speed = 16
 
     cycle_frame_rate = 120
@@ -65,25 +63,6 @@ class Entity(pygame.sprite.Sprite):
             frame = (ticks // self.cycle_frame_rate) % len(self.walking_frames_l)
             self.image = self.walking_frames_l[frame]
 
-    def check_for_movement_keys(self):
-        pressed_keys = pygame.key.get_pressed()
-
-        moving_left = pressed_keys[pygame.K_LEFT]
-        moving_right = pressed_keys[pygame.K_RIGHT]
-
-        if self.direction == Direction.LEFT and moving_left:
-            self.x_velocity -= self.acceleration
-        elif self.direction == Direction.RIGHT and moving_right:
-            self.x_velocity += self.acceleration
-
-        if self.direction == Direction.LEFT and moving_right:
-            self.x_velocity = self.deacceleration
-        elif self.direction == Direction.RIGHT and moving_left:
-            self.x_velocity = self.deacceleration
-
-        if not (moving_left or moving_right):
-            self.apply_friction()
-
     def calculate_gravity(self, time_passed):
         if self.falling:
             self.y_velocity += self.gravity * time_passed
@@ -91,16 +70,9 @@ class Entity(pygame.sprite.Sprite):
             if self.y_velocity >= self.maximum_fall_speed:
                 self.y_velocity = self.maximum_fall_speed
 
-    def apply_friction(self):
-        self.x_velocity = self.x_velocity - min(abs(self.x_velocity), self.friction) * self.x_velocity
-        self.y_velocity = self.y_velocity - min(abs(self.y_velocity), self.friction) * self.y_velocity
-
     def update(self, time_passed):
         self.animate_sprite()
         self.calculate_gravity(time_passed)
-
-        if self.moving:
-            self.check_for_movement_keys()
 
         if self.x_velocity == 0:
             self.moving = False
@@ -109,8 +81,6 @@ class Entity(pygame.sprite.Sprite):
         self.move_sprite()
 
     def move_sprite(self):
-        self.x_velocity = max(min(self.x_velocity, self.maximum_run_speed), -self.maximum_run_speed)
-
         self.rect.x = min(max(self.rect.x + self.x_velocity, 0), self.level.level_width)
         self.rect.y = min(max(self.rect.y + self.y_velocity, 0), self.level.level_height)
 

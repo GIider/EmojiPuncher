@@ -35,15 +35,20 @@ class Player(Entity):
         moving_left = pressed_keys[pygame.K_LEFT]
         moving_right = pressed_keys[pygame.K_RIGHT]
 
+        if not moving_left and not moving_right:
+            self.x_velocity = 0
+
         if self.direction == Direction.LEFT and moving_left:
-            self.x_velocity -= self.acceleration
+            self.x_velocity = -self.acceleration
         elif self.direction == Direction.RIGHT and moving_right:
-            self.x_velocity += self.acceleration
+            self.x_velocity = self.acceleration
 
         if self.direction == Direction.LEFT and moving_right:
-            self.x_velocity = self.deacceleration
+            self.x_velocity = -self.deacceleration
         elif self.direction == Direction.RIGHT and moving_left:
             self.x_velocity = self.deacceleration
 
-        if not (moving_left or moving_right):
-            self.apply_friction()
+    def update(self, time_passed):
+        self.check_for_movement_keys()
+
+        super(Player, self).update(time_passed)
