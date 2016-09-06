@@ -11,7 +11,7 @@ __all__ = ['TestLevel']
 
 class Level(object):
     background_path = ('images', 'background.png')
-    logic_path = ('level', 'testlevel.bmp')
+    logic_path = ('level.bmp',)
 
     def __init__(self, player):
         self.entity_list = pygame.sprite.Group()
@@ -29,8 +29,8 @@ class Level(object):
         self.camera = Camera(complex_camera, self.level_width, self.level_height)
 
     def populate_stage(self):
-        # TODO: Use logic_path
-        image = pygame.image.load(os.path.join('emoji_puncher', 'level', 'testlevel.bmp')).convert()
+        image_path = os.path.join(os.path.dirname(__file__), *self.logic_path)
+        image = pygame.image.load(image_path).convert()
 
         for x in range(0, image.get_width()):
             for y in range(0, image.get_height()):
@@ -67,6 +67,7 @@ class Level(object):
 
 class TestLevel(Level):
     background_path = ('images', 'background_test_level.png')
+    logic_path = ('testlevel.bmp',)
 
 
 class Camera(object):
