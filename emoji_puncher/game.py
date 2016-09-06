@@ -3,7 +3,6 @@ import sys
 
 import pygame
 
-from .constant import HUD_HEIGHT
 from .entity import Player
 from .level import TestLevel
 
@@ -16,9 +15,6 @@ def quit_application():
 class Game(object):
     width = 800
     height = 400
-
-    playable_width = width
-    playable_height = height - HUD_HEIGHT
 
     def __init__(self):
         self.screen = pygame.display.set_mode((self.width, self.height))
@@ -34,7 +30,7 @@ class Game(object):
         self.player.process_keydown(key)
 
     def run(self):
-        level = TestLevel(self.player)
+        TestLevel.load_stage(player=self.player)
 
         while True:
             for event in pygame.event.get():
@@ -46,5 +42,5 @@ class Game(object):
             time_passed = self.clock.tick(60)
             self.screen.fill((255, 255, 255))
 
-            level.draw(self.screen)
-            level.update(time_passed)
+            self.player.level.draw(self.screen)
+            self.player.level.update(time_passed)

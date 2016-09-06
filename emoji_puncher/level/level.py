@@ -4,7 +4,7 @@ import os
 import pygame
 
 from ..constant import TILE_SIZE
-from ..entity import Gate
+from ..entity import Gate, WarpDoor
 
 __all__ = ['TestLevel']
 
@@ -15,11 +15,7 @@ class Level(object):
     def __init__(self, player):
         self.entity_list = pygame.sprite.Group()
         self.player = player
-        self.player.level = self
-
-        self.populate_stage()
-
-        self.entity_list.add()
+        self.spawn_point = None
 
         logic_image = self.load_logic_image()
 
@@ -27,6 +23,24 @@ class Level(object):
         self.height = logic_image.get_height() * TILE_SIZE[1]
 
         self.camera = Camera(complex_camera, self.width, self.height)
+
+    @classmethod
+    def load_stage(cls, player):
+        if player.level is not None:
+            player.level.leave_stage()
+
+        level = cls(player)
+        level.populate_stage()
+
+        level.player.level = level
+        level.player.rect.x = level.spawn_point[0] * level.player.rect.width
+        level.player.rect.y = level.spawn_point[1] * level.player.rect.height
+
+        return level
+
+    def leave_stage(self):
+        self.entity_list = pygame.sprite.Group()
+        self.player.level = None
 
     def load_logic_image(self):
         image_path = os.path.join(os.path.dirname(__file__), *self.logic_path)
@@ -51,8 +65,18 @@ class Level(object):
 
                 # Spawn Point
                 elif color == (255, 0, 220):
-                    self.player.rect.x = x * self.player.rect.width
-                    self.player.rect.y = y * self.player.rect.height
+                    self.spawn_point = [x, y]
+
+                # Warp door
+                elif color == (255, 0, 0):
+                    warpdoor = WarpDoor(level=self, level_to_warp_to=OtherLevel)
+                    warpdoor.rect.x = x * warpdoor.rect.width
+                    warpdoor.rect.y = y * warpdoor.rect.height
+
+                    self.entity_list.add(warpdoor)
+
+        if self.spawn_point is None:
+            raise ValueError()
 
     def update(self, time_passed):
         self.camera.update(self.player)
@@ -70,6 +94,10 @@ class Level(object):
 
 class TestLevel(Level):
     logic_path = ('testlevel.bmp',)
+
+
+class OtherLevel(Level):
+    logic_path = ('otherlevel.bmp',)
 
 
 class Camera(object):

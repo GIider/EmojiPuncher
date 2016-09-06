@@ -16,6 +16,12 @@ class Player(Entity):
         if self.standing_on_ground():
             self.y_velocity = self.jump_velocity
 
+    def enter(self):
+        entities = pygame.sprite.spritecollide(self, self.level.entity_list, False)
+
+        for entity in entities:
+            entity.interact()
+
     def process_keydown(self, key):
         if key == pygame.K_LEFT:
             self.moving = True
@@ -27,6 +33,9 @@ class Player(Entity):
 
         elif key == pygame.K_UP:
             self.jump()
+
+        elif key == pygame.K_DOWN:
+            self.enter()
 
     def check_for_movement_keys(self):
         pressed_keys = pygame.key.get_pressed()
