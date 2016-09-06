@@ -3,6 +3,7 @@ import sys
 
 import pygame
 
+from emoji_puncher.level.level import TestLevel
 from .constant import HUD_HEIGHT
 from .entity import Player
 
@@ -23,23 +24,18 @@ class Game(object):
         self.screen = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption('EmojiPuncher')
 
-        self.entities = []
-
         self.player = Player()
         self.clock = pygame.time.Clock()
-        self.pause = False
 
     def handle_keydown(self, key):
         if key == pygame.K_ESCAPE:
             quit_application()
 
-        elif key == pygame.K_p:
-            self.pause = not self.pause
-
-        if not self.pause:
-            self.player.process_keydown(key)
+        self.player.process_keydown(key)
 
     def run(self):
+        level = TestLevel(self.player)
+
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
@@ -49,12 +45,6 @@ class Game(object):
 
             time_passed = self.clock.tick(60)
             self.screen.fill((255, 255, 255))
-            for entity in self.entities:
-                entity.render(screen=self.screen)
 
-            pygame.display.flip()
-            for entity in self.entities[:]:
-                if entity.alive and not self.pause:
-                    entity.update(time_passed=time_passed)
-                elif not entity.alive:
-                    self.entities.remove(entity)
+            level.draw(self.screen)
+            level.update(time_passed)
