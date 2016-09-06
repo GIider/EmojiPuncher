@@ -1,83 +1,50 @@
 # coding=utf-8
-import os
-
 import pygame
 
-from .entity import Entity
-from .punch import Punch
-from ..constant import IMAGE_FOLDER, Direction, DIRECTION_KEYS, PUNCHING_KEYS
-
-__all__ = ['Player']
+from ..spritesheet import SpriteSheet
 
 
-class Player(Entity):
-    speed = 0.55
-    sprite_path = os.path.join(IMAGE_FOLDER, 'player.png')
-    angry_sprite_path = os.path.join(IMAGE_FOLDER, 'player_angry.png')
+class Player(pygame.sprite.Sprite):
+    cycle_frame_rate = 120
 
-    def __init__(self, game):
-        self.moving = False
-        self._punch = None
+    walking_sprite_sheet = ('images', 'player.png')
+    walking_cycle = [(0, 0, 64, 64),
+                     (64, 0, 64, 64)]
 
-        super().__init__(game)
+    def __init__(self):
+        """ Constructor function """
+        pygame.sprite.Sprite.__init__(self)
 
-    def process_keydown(self, key):
-        if key in PUNCHING_KEYS:
-            self.punch(direction=Direction.from_key(key=key))
+        # Walking animations
+        self.walking_frames_l = []
+        self.walking_frames_r = []
 
-    @property
-    def is_punching(self):
-        return not (self._punch is None or not self._punch.alive)
+        self.direction = "R"
+        self.load_walking_frames()
 
-    def punch(self, direction):
-        if not self.is_punching:
-            punch = Punch.spawn(game=self.game, player=self, direction=direction)
+        # Set the image the player starts with
+        self.image = self.walking_frames_r[0]
+        self.rect = self.image.get_rect()
+
+        self.level = None
+
+    def load_walking_frames(self):
+        sprite_sheet = SpriteSheet(*self.walking_sprite_sheet)
+
+        for x, y, width, height in self.walking_cycle:
+            image = sprite_sheet.get_image(x, y, width, height)
+            self.walking_frames_r.append(image)
+
+            image = pygame.transform.flip(image, True, False)
+            self.walking_frames_l.append(image)
+
+    def animate_sprite(self):
+        """Cycle the walking frames"""
+        pos = self.rect.x + self.level.world_shift
+
+        if self.direction == "R":
+            frame = (pos // self.cycle_frame_rate) % len(self.walking_frames_r)
+            self.image = self.walking_frames_r[frame]
         else:
-            punch = self._punch
-
-        self._punch = punch
-
-    @property
-    def sprite(self):
-        if self.is_punching:
-            return self.load_sprite(path=self.angry_sprite_path)
-        else:
-            return self.load_sprite(path=self.sprite_path)
-
-    @sprite.setter
-    def sprite(self, value):
-        return
-
-    def update(self, time_passed):
-        pressed_keys = pygame.key.get_pressed()
-
-        is_moving = False
-        for direction_key in DIRECTION_KEYS:
-            if pressed_keys[direction_key]:
-                direction = Direction.from_key(key=direction_key)
-                is_moving = True
-
-                if direction == Direction.LEFT:
-                    self.x_velocity -= self.speed
-                elif direction == Direction.RIGHT:
-                    self.x_velocity += self.speed
-                elif direction == Direction.DOWN:
-                    self.y_velocity += self.speed
-                elif direction == Direction.UP:
-                    self.y_velocity -= self.speed
-
-        if not is_moving:
-            self.x_velocity = self.x_velocity - min(abs(self.x_velocity), self.friction) * self.x_velocity
-            self.y_velocity = self.y_velocity - min(abs(self.y_velocity), self.friction) * self.y_velocity
-
-        self.x_velocity = max(min(self.x_velocity, self.maximum_x_velocity), self.minimum_x_velocity)
-        self.y_velocity = max(min(self.y_velocity, self.maximum_y_velocity), self.minimum_y_velocity)
-
-        if self.x_velocity == 0 and self.y_velocity == 0:
-            self.moving = False
-
-        self.x += self.x_velocity
-        self.y += self.y_velocity
-
-        self.x = min(max(self.x + self.x_velocity, 0), self.game.playable_width - self.width)
-        self.y = min(max(self.y + self.y_velocity, 0), self.game.playable_height - self.height)
+            frame = (pos // self.cycle_frame_rate) % len(self.walking_frames_l)
+            self.image = self.walking_frames_l[frame]
