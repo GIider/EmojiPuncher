@@ -6,10 +6,10 @@ from ..spritesheet import SpriteSheet
 
 
 class Entity(pygame.sprite.Sprite):
-    jump_velocity = -4
+    jump_velocity = -8
     acceleration = 4
     deacceleration = 3
-    gravity = 0.21875 / 32
+    gravity = 0.21875 / 15
 
     maximum_fall_speed = 16
 
@@ -26,7 +26,6 @@ class Entity(pygame.sprite.Sprite):
         self.x_velocity = 0
         self.y_velocity = 0
 
-        self.falling = True
         self.moving = False
 
         # Walking animations
@@ -64,11 +63,10 @@ class Entity(pygame.sprite.Sprite):
             self.image = self.walking_frames_l[frame]
 
     def calculate_gravity(self, time_passed):
-        if self.falling:
-            self.y_velocity += self.gravity * time_passed
+        self.y_velocity += self.gravity * time_passed
 
-            if self.y_velocity >= self.maximum_fall_speed:
-                self.y_velocity = self.maximum_fall_speed
+        if self.y_velocity >= self.maximum_fall_speed:
+            self.y_velocity = self.maximum_fall_speed
 
     def update(self, time_passed):
         self.animate_sprite()
@@ -88,7 +86,6 @@ class Entity(pygame.sprite.Sprite):
         self.calculate_vertical_collision()
 
         if self.rect.y > (self.level.level_height - self.rect.height):
-            self.falling = False
             self.y_velocity = 0
             self.rect.y = self.level.level_height - self.rect.height
 
@@ -98,33 +95,32 @@ class Entity(pygame.sprite.Sprite):
             self.rect.x = self.level.level_width - self.rect.width
 
     def calculate_horizontal_collision(self):
-        """Calculate if we hit anything"""
+        """Calculate if we hit anything horizontally"""
         block_hit_list = pygame.sprite.spritecollide(self, self.level.entity_list, False)
         for block in block_hit_list:
-            # If we are moving right,
-            # set our right side to the left side of the item we hit
             if self.x_velocity > 0:
                 self.rect.right = block.rect.left
 
             elif self.x_velocity < 0:
-                # Otherwise if we are moving left, do the opposite.
                 self.rect.left = block.rect.right
 
     def calculate_vertical_collision(self):
+        """Calculate if we hit anything vertically"""
         block_hit_list = pygame.sprite.spritecollide(self, self.level.entity_list, False)
         for block in block_hit_list:
             if block == self:
                 continue
 
-            # Reset our position based on the top/bottom of the object.
             if self.y_velocity > 0:
                 self.rect.bottom = block.rect.top
             elif self.y_velocity < 0:
                 self.rect.top = block.rect.bottom
 
-            # Stop our vertical movement
             self.y_velocity = 0
-            self.falling = False
 
-            # if isinstance(block, MovingPlatform):
-            #    self.rect.x += block.change_x
+    def standing_on_ground(self):
+        self.rect.y += 2
+        collided_entities = pygame.sprite.spritecollide(self, self.level.entity_list, False)
+        self.rect.y -= 2
+
+        return len(collided_entities) > 0 or self.rect.bottom >= self.level.level_height

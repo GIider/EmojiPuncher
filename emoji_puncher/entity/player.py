@@ -13,9 +13,8 @@ class Player(Entity):
                      (64, 0, 64, 64)]
 
     def jump(self):
-        if not self.falling:
+        if self.standing_on_ground():
             self.y_velocity = self.jump_velocity
-            self.falling = True
 
     def process_keydown(self, key):
         if key == pygame.K_LEFT:

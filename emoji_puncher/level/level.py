@@ -3,14 +3,13 @@ import os
 
 import pygame
 
+from ..constant import TILE_SIZE
 from ..entity import Gate
-from ..spritesheet import SpriteSheet
 
 __all__ = ['TestLevel']
 
 
 class Level(object):
-    background_path = ('images', 'background.png')
     logic_path = ('level.bmp',)
 
     def __init__(self, player):
@@ -22,15 +21,21 @@ class Level(object):
 
         self.entity_list.add()
 
-        self.background = SpriteSheet(*self.background_path).get_image(0, 0, 2100, 600)
-        self.level_width = self.background.get_width()
-        self.level_height = self.background.get_height()
+        logic_image = self.load_logic_image()
 
-        self.camera = Camera(complex_camera, self.level_width, self.level_height)
+        self.width = logic_image.get_width() * TILE_SIZE[0]
+        self.height = logic_image.get_height() * TILE_SIZE[1]
 
-    def populate_stage(self):
+        self.camera = Camera(complex_camera, self.width, self.height)
+
+    def load_logic_image(self):
         image_path = os.path.join(os.path.dirname(__file__), *self.logic_path)
         image = pygame.image.load(image_path).convert()
+
+        return image
+
+    def populate_stage(self):
+        image = self.load_logic_image()
 
         for x in range(0, image.get_width()):
             for y in range(0, image.get_height()):
@@ -55,8 +60,6 @@ class Level(object):
         self.player.update(time_passed)
 
     def draw(self, screen):
-        screen.blit(self.background, self.camera.apply_to_background(self.background))
-
         for entity in self.entity_list:
             screen.blit(entity.image, self.camera.apply(entity))
 
@@ -66,7 +69,6 @@ class Level(object):
 
 
 class TestLevel(Level):
-    background_path = ('images', 'background_test_level.png')
     logic_path = ('testlevel.bmp',)
 
 
@@ -77,9 +79,6 @@ class Camera(object):
 
     def apply(self, target):
         return target.rect.move(self.state.topleft)
-
-    def apply_to_background(self, background):
-        return background.get_rect().move(self.state.topleft)
 
     def update(self, target):
         self.state = self.camera_func(self.state, target.rect)

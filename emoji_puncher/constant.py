@@ -4,10 +4,7 @@ import os
 
 import pygame
 
-ENEMY_SPAWN_COOLDOWN = 500
-MAX_ENEMIES = 25
-
-HUD_HEIGHT = 80
+TILE_SIZE = (64, 64)
 
 
 class Direction(enum.Enum):
