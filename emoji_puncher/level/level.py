@@ -1,4 +1,6 @@
 # coding=utf-8
+import os
+
 import pygame
 
 from ..entity import Gate
@@ -6,8 +8,10 @@ from ..spritesheet import SpriteSheet
 
 __all__ = ['TestLevel']
 
+
 class Level(object):
     background_path = ('images', 'background.png')
+    logic_path = ('level', 'testlevel.bmp')
 
     def __init__(self, player):
         self.entity_list = pygame.sprite.Group()
@@ -25,7 +29,25 @@ class Level(object):
         self.camera = Camera(complex_camera, self.level_width, self.level_height)
 
     def populate_stage(self):
-        raise NotImplementedError()
+        # TODO: Use logic_path
+        image = pygame.image.load(os.path.join('emoji_puncher', 'level', 'testlevel.bmp')).convert()
+
+        for x in range(0, image.get_width()):
+            for y in range(0, image.get_height()):
+                color = image.get_at((x, y))
+
+                # Gate
+                if color == (0, 0, 0, 255):
+                    gate = Gate(level=self)
+                    gate.rect.x = x * gate.rect.width
+                    gate.rect.y = y * gate.rect.height
+
+                    self.entity_list.add(gate)
+
+                # Spawn Point
+                elif color == (255, 0, 220):
+                    self.player.rect.x = x * self.player.rect.width
+                    self.player.rect.y = y * self.player.rect.height
 
     def update(self, time_passed):
         self.camera.update(self.player)
@@ -45,19 +67,6 @@ class Level(object):
 
 class TestLevel(Level):
     background_path = ('images', 'background_test_level.png')
-
-    def populate_stage(self):
-        gate = Gate(level=self)
-        gate.rect.x = 300
-        gate.rect.y = 300
-
-        self.entity_list.add(gate)
-
-        gate = Gate(level=self)
-        gate.rect.x = 250
-        gate.rect.y = 400
-
-        self.entity_list.add(gate)
 
 
 class Camera(object):
