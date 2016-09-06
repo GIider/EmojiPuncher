@@ -3,9 +3,9 @@ import sys
 
 import pygame
 
-from emoji_puncher.level.level import TestLevel
 from .constant import HUD_HEIGHT
 from .entity import Player
+from .level import TestLevel
 
 
 def quit_application():

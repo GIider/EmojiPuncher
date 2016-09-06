@@ -4,6 +4,7 @@ import pygame
 from ..entity import Gate
 from ..spritesheet import SpriteSheet
 
+__all__ = ['TestLevel']
 
 class Level(object):
     background_path = ('images', 'background.png')
@@ -43,10 +44,18 @@ class Level(object):
 
 
 class TestLevel(Level):
+    background_path = ('images', 'background_test_level.png')
+
     def populate_stage(self):
         gate = Gate(level=self)
         gate.rect.x = 300
         gate.rect.y = 300
+
+        self.entity_list.add(gate)
+
+        gate = Gate(level=self)
+        gate.rect.x = 250
+        gate.rect.y = 400
 
         self.entity_list.add(gate)
 

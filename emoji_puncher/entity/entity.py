@@ -124,6 +124,7 @@ class Entity(pygame.sprite.Sprite):
 
             # Stop our vertical movement
             self.y_velocity = 0
+            self.falling = False
 
             # if isinstance(block, MovingPlatform):
             #    self.rect.x += block.change_x
