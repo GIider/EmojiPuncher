@@ -24,7 +24,7 @@ class Game(object):
         self.screen = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption('EmojiPuncher')
 
-        self.player = Player()
+        self.player = Player(level=None)
         self.clock = pygame.time.Clock()
 
     def handle_keydown(self, key):

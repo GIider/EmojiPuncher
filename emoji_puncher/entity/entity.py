@@ -21,7 +21,7 @@ class Entity(pygame.sprite.Sprite):
     walking_cycle = [(0, 0, 64, 64),
                      (64, 0, 64, 64)]
 
-    def __init__(self):
+    def __init__(self, level):
         """ Constructor function """
         pygame.sprite.Sprite.__init__(self)
 
@@ -42,7 +42,7 @@ class Entity(pygame.sprite.Sprite):
         self.image = self.walking_frames_r[0]
         self.rect = self.image.get_rect()
 
-        self.level = None
+        self.level = level
 
     def load_walking_frames(self):
         sprite_sheet = SpriteSheet(*self.walking_sprite_sheet)
@@ -111,10 +111,15 @@ class Entity(pygame.sprite.Sprite):
     def move_sprite(self):
         self.x_velocity = max(min(self.x_velocity, self.maximum_run_speed), -self.maximum_run_speed)
 
-        self.rect.x = min(max(self.rect.x + self.x_velocity, 0), 800)
-        self.rect.y = min(max(self.rect.y + self.y_velocity, 0), 400)
+        self.rect.x = min(max(self.rect.x + self.x_velocity, 0), self.level.level_width)
+        self.rect.y = min(max(self.rect.y + self.y_velocity, 0), self.level.level_height)
 
-        if self.rect.y > (400 - self.rect.height):
+        if self.rect.y > (self.level.level_height - self.rect.height):
             self.falling = False
             self.y_velocity = 0
-            self.rect.y = 400 - self.rect.height
+            self.rect.y = self.level.level_height - self.rect.height
+
+        if self.rect.x > (self.level.level_width - self.rect.width):
+            self.moving = False
+            self.x_velocity = 0
+            self.rect.x = self.level.level_width - self.rect.width
