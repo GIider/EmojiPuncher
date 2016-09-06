@@ -1,7 +1,8 @@
 # coding=utf-8
 import pygame
 
-from emoji_puncher.spritesheet import SpriteSheet
+from ..entity import Gate
+from ..spritesheet import SpriteSheet
 
 
 class Level(object):
@@ -11,7 +12,12 @@ class Level(object):
         self.entity_list = pygame.sprite.Group()
         self.player = player
 
+        gate = Gate()
+        gate.rect.x = 300
+        gate.rect.y = 300
+
         self.entity_list.add(self.player)
+        self.entity_list.add(gate)
 
         self.background = SpriteSheet(*self.background_path).get_image(0, 0, 2100, 600)
 
