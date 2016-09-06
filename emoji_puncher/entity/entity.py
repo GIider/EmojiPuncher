@@ -82,7 +82,10 @@ class Entity(pygame.sprite.Sprite):
 
     def move_sprite(self):
         self.rect.x = min(max(self.rect.x + self.x_velocity, 0), self.level.level_width)
+        self.calculate_horizontal_collision()
+
         self.rect.y = min(max(self.rect.y + self.y_velocity, 0), self.level.level_height)
+        self.calculate_vertical_collision()
 
         if self.rect.y > (self.level.level_height - self.rect.height):
             self.falling = False
@@ -93,3 +96,34 @@ class Entity(pygame.sprite.Sprite):
             self.moving = False
             self.x_velocity = 0
             self.rect.x = self.level.level_width - self.rect.width
+
+    def calculate_horizontal_collision(self):
+        """Calculate if we hit anything"""
+        block_hit_list = pygame.sprite.spritecollide(self, self.level.entity_list, False)
+        for block in block_hit_list:
+            # If we are moving right,
+            # set our right side to the left side of the item we hit
+            if self.x_velocity > 0:
+                self.rect.right = block.rect.left
+
+            elif self.x_velocity < 0:
+                # Otherwise if we are moving left, do the opposite.
+                self.rect.left = block.rect.right
+
+    def calculate_vertical_collision(self):
+        block_hit_list = pygame.sprite.spritecollide(self, self.level.entity_list, False)
+        for block in block_hit_list:
+            if block == self:
+                continue
+
+            # Reset our position based on the top/bottom of the object.
+            if self.y_velocity > 0:
+                self.rect.bottom = block.rect.top
+            elif self.y_velocity < 0:
+                self.rect.top = block.rect.bottom
+
+            # Stop our vertical movement
+            self.y_velocity = 0
+
+            # if isinstance(block, MovingPlatform):
+            #    self.rect.x += block.change_x

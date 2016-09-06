@@ -15,7 +15,7 @@ class Level(object):
 
         self.populate_stage()
 
-        self.entity_list.add(self.player)
+        self.entity_list.add()
 
         self.background = SpriteSheet(*self.background_path).get_image(0, 0, 2100, 600)
         self.level_width = self.background.get_width()
@@ -36,6 +36,8 @@ class Level(object):
 
         for entity in self.entity_list:
             screen.blit(entity.image, self.camera.apply(entity))
+
+        screen.blit(self.player.image, self.camera.apply(self.player))
 
         pygame.display.flip()
 
